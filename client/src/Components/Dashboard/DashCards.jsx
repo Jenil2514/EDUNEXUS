@@ -17,7 +17,7 @@ export default function DashCards() {
 
 
     const Api = `${ENDPOINT}/api/user/dashboard?SID=${SID}`;
-    const [attendance, setattendance] = useState(100);
+    const [attendance, setattendance] = useState("100%");
     const [notice, setnotice] = useState("");
     const [event, setevent] = useState("");
     const [TableData, setTableData] = useState([]);
@@ -27,17 +27,17 @@ export default function DashCards() {
     const fetchApiData = async () => {
         const SID = JSON.parse(localStorage.getItem("userInfo")).SID;
         const role = JSON.parse(localStorage.getItem("userInfo")).role;
-        console.log(SID);
-        console.log(role);
+        // console.log(SID);
+        // console.log(role);
         try {
             const response = await axios.get(Api, {
                 SID: SID,
                 role: role
             });
-            console.log(response.data);
+            // console.log(response.data);
             setattendance(response.data?.attendance_data?.Overall_attendance);
             setnotice(response.data?.notice_board_data);
-            console.log(response.data?.notice_board_data);
+            // console.log(response.data?.notice_board_data);
             setevent(response.data?.upcoming_events_data);
             setTableData(response.data?.time_table_data);
         }

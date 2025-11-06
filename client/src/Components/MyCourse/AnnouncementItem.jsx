@@ -15,7 +15,7 @@ const AnnouncementItem = ({ LabId,title, date, facultyName, content, category })
   // Handlers for opening and closing modal
   const handleOpenModal = () => setIsModalOpen(true);
   const handleCloseModal = () => setIsModalOpen(false);
-	console.log("LabId",LabId);
+	// console.log("LabId",LabId);
   return (
 		<>
 			{/* Main Announcement Card */}

@@ -30,7 +30,7 @@ function getRandomColor() {
 
 function DashNotice({notice}) {
   useEffect(() => {
-    console.log('Notice data:', notice);
+    // console.log('Notice data:', notice);
   }, [notice]);
   return (  // Corrected: Added the return statement
     <>
@@ -44,12 +44,14 @@ function DashNotice({notice}) {
         }}
       >
         {notice && notice.length > 0 ? (
-          notice.map(({lab_id, title, due_time,description}) => {
+          notice.map(({lab_id, title, due_time,description}, index) => {
             const randomColor = getRandomColor();
-
+            // Ensure key uniqueness: prefer lab_id when available, otherwise fall back to a title+index combo
+            const itemKey = lab_id ? `lab-${lab_id}` : `notice-${index}-${title}`;
+            
             return (
               <Paper
-                key={lab_id}
+                key={itemKey}
                 data-testid="notice"
                 sx={{
                   paddingLeft: '10px',

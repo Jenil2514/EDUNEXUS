@@ -114,7 +114,7 @@ export default function Navbar() {
 	useEffect(() => {
 		const storedUserInfo = JSON.parse(localStorage.getItem("userInfo"));
 		setUserInfo(storedUserInfo);
-		console.log(storedUserInfo);
+		// console.log(storedUserInfo);
 	}, []);
 	const handleLogout = () => {
 		localStorage.removeItem("userInfo");

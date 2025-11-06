@@ -6,8 +6,8 @@ import '../CSS/Loading.css';
 function Loding() {
   return (
     <div className='loading-container'>
-      <img src={Loader} alt="" className='loading-background'/>
-      <div class="loader"></div>
+  <img src={Loader} alt="" className='loading-background'/>
+  <div className="loader"></div>
     </div>
   )
 }

@@ -50,7 +50,7 @@ export default function TimeTable({ TableData }) {
   };
 
   if (isLoading) {
-    return <p>Loading timetable...</p>;
+  return <div>Loading timetable...</div>;
   }
 
   return (

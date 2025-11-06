@@ -39,22 +39,26 @@ const IconContainer = styled(Box)(({ theme }) => ({
   marginBottom: "10px",
 }));
 
-const FeeCard = ({ fee, onPayment }) => {
+const FeeCard = ({ fee = {}, onPayment = () => {} }) => {
+  // Defensive defaults
+  const { type = 'unknown', due_date = null, is_paid = false, amount = 0, id = null } = fee || {};
+
   const [remainingDays, setRemainingDays] = useState(0);
-  const [isPaid, setIsPaid] = useState(fee.is_paid);
+  const [isPaid, setIsPaid] = useState(Boolean(is_paid));
 
   useEffect(() => {
     const calculateRemainingDays = (dueDate) => {
+      if (!dueDate) return 0;
       const currentDate = new Date();
       const due = new Date(dueDate);
       const diffTime = due - currentDate;
       return Math.max(0, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
     };
-    setRemainingDays(calculateRemainingDays(fee.due_date));
-  }, [fee.due_date]);
+    setRemainingDays(calculateRemainingDays(due_date));
+  }, [due_date]);
 
   const handlePayment = () => {
-    onPayment(fee.id);
+    if (id !== null) onPayment(id);
     setIsPaid(true);
   };
 
@@ -62,14 +66,14 @@ const FeeCard = ({ fee, onPayment }) => {
     <FeeCardContainer>
       <CardContent style={{ textAlign: "center" }}>
         <IconContainer>
-          {icons[fee.type] || (
+          {icons[type] || (
             <Typography variant="h6" style={{ color: "#fff" }}>
               ?
             </Typography>
           )}
         </IconContainer>
-        <Typography variant="h6" style={{ fontWeight: "bold", color: "#333" }}>
-          {fee.type.charAt(0).toUpperCase() + fee.type.slice(1)} Fee
+          <Typography variant="h6" style={{ fontWeight: "bold", color: "#333" }}>
+            {typeof type === 'string' && type.length > 0 ? (type.charAt(0).toUpperCase() + type.slice(1)) : 'Unknown'} Fee
         </Typography>
         <Typography
           variant="body2"
@@ -93,7 +97,7 @@ const FeeCard = ({ fee, onPayment }) => {
           color: "#1976d2",
         }}
       >
-        Amount: ${fee.amount}
+        Amount: ${amount}
       </Typography>
 
       {isPaid ? (

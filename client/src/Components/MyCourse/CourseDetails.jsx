@@ -79,7 +79,7 @@ const CourseDetails = () => {
 
 	// let cid = 1;
 	const { course_id: cid } = useParams(); // Matches the route parameter name
-	console.log("course_id", cid);
+	// console.log("course_id", cid);
 	let Api = null;
 	if (role === "student") {
 		Api = `${ENDPOINT}/api/user/dashboard/Mycourses/${cid}/lab`; // Use course_id
@@ -94,7 +94,7 @@ const CourseDetails = () => {
 	const fetchApiData = async () => {
 		try {
 			const response = await axios.get(Api); // Corrected typo here
-			console.log(response.data); // Ensure this line is uncommented to print data
+			// console.log(response.data); // Ensure this line is uncommented to print data
 			setLab(response.data);
 		} catch (error) {
 			console.log(error);
@@ -115,7 +115,7 @@ const CourseDetails = () => {
 	const fetchApiData2= async () => {
 		try {
 			const response = await axios.get(Api2); // Corrected typo here
-			console.log(response.data); // Ensure this line is uncommented to print data
+			// console.log(response.data); // Ensure this line is uncommented to print data
 			setNotes(response.data.notes);
 		} catch (error) {
 			console.log(error);
@@ -125,9 +125,10 @@ const CourseDetails = () => {
 
 
 	useEffect(() => {
-		fetchApiData(); // Ensure fetchApiData is called inside useEffect
+		// Fetch labs and notes when the course id (cid) changes
+		fetchApiData();
 		fetchApiData2();
-	}, [lab,notes]);
+	}, [cid]);
 	
 
 

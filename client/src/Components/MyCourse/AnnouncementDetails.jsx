@@ -10,8 +10,8 @@ import AnnouncementItem from './AnnouncementItem';
 // ];
 
 const AnnouncementDetails = ({ category, Lists }) => {
-	console.log("categaaaory");
-	console.log(Lists);
+	// console.log("categaaaory");
+	// console.log(Lists);
   return (
 		<Container maxWidth="md" sx={{ pt: 4, color: "#003366" }}>
 			{/* Page Header */}
@@ -34,7 +34,8 @@ const AnnouncementDetails = ({ category, Lists }) => {
 								LabId={List.lab_id}
 								title={List.title}
 								date={List.due_time}
-								facultyName={List.prof_id}
+								/* server currently returns prof_id (number) here; cast to string for the component */
+								facultyName={List.prof_id ? String(List.prof_id) : 'Unknown'}
 								content={List.description}
 								category={category}
 							/>

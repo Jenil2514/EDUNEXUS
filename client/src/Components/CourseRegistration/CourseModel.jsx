@@ -19,7 +19,7 @@ const CourseModel = ({ course, onClose }) => {
             &times;
           </button>
           <h2>{course.course_name}</h2>
-          <p>{course.course_description}</p>
+          <div>{course.course_description}</div>
           <div className="course-info">
             <span>Course ID: {course.course_code}</span>
             <span>Semester: {course.semester}</span>

@@ -76,7 +76,7 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Current User Role:", currentUser);
+    // console.log("Current User Role:", currentUser);
     localStorage.removeItem("userinfo");
     setIsLoading(true); // Set loading state to true
     try {
@@ -141,6 +141,8 @@ export default function Login() {
   };
 
   return (
+    <>
+    <span style={{backgroundColor:"red",color:"white",justifyContent:"center",alignItems:"center",width:"100%",marginLeft:"10px"}}>Notic: Use "student id" = S001, "Faculty id" = F001 & password  = password for visitors</span>
     <div
       style={{
         display: "flex",
@@ -319,5 +321,6 @@ export default function Login() {
         </div>
       </Box>
     </div>
+    </>
   );
 }

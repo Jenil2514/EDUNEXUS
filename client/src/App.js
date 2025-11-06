@@ -1,7 +1,7 @@
 import './App.css';
 import React from 'react'; 
 import ProtectedRoute from './ProtectedRoute';
-import Chat from './Components/Chat/Chat'; 
+// import Chat from './Components/Chat/Chat'; 
 import { Grid } from "@mui/material";
 import Navbar from "./Components/Navbar/Navbar";
 import Login from "./Pages/Login";
@@ -27,7 +27,14 @@ import NotFound from './Components/404NotFound';
 import AboutUs from './Components/AbousUs/AboutUs';
 function Layout() {
   const navigate = useNavigate();
-  const role=JSON.parse(localStorage.getItem('userInfo')).role;
+	let role = null;
+	try {
+		const stored = localStorage.getItem('userInfo');
+		const parsed = stored ? JSON.parse(stored) : null;
+		role = parsed?.role || null;
+	} catch (err) {
+		role = null;
+	}
     const handleAvatarClick = () => {
         navigate('/Profile'); // Navigate to the profile page
     };
@@ -57,7 +64,7 @@ function Layout() {
             style={{ cursor: "pointer" }}/>
           }
 					
-					<Chat></Chat>
+					{/* <Chat></Chat> */}
 
 				</Box>
 			</Grid>

@@ -341,7 +341,7 @@ const AnnouncementForm = ({ addAnnouncement, handleClose }) => {
 					<MenuItem value="Assignment">Assignment</MenuItem>
 				</Select>
 				{formErrors.category && (
-					<p style={{ color: "red" }}>{formErrors.category}</p>
+					<div style={{ color: "red" }}>{formErrors.category}</div>
 				)}
 			</FormControl>
 			{category === "Lab" ? (
@@ -367,8 +367,8 @@ const AnnouncementForm = ({ addAnnouncement, handleClose }) => {
 					/> */}
 					{/* {formErrors.time && <p style={{ color: "red" }}>{formErrors.time}</p>} */}
 					<div>
-						<p>Selected Date: {date}</p>
-						{/* <p>Selected Time: {time}</p> */}
+						<div>Selected Date: {date}</div>
+						{/* <div>Selected Time: {time}</div> */}
 					</div>
 				</div>
 			) : null}
@@ -406,7 +406,7 @@ const AnnouncementForm = ({ addAnnouncement, handleClose }) => {
 				{savedLink && (
 					<div style={{ marginTop: "10px" }}>
 						<strong>Saved Link:</strong>
-						<p>{savedLink}</p>
+						<div>{savedLink}</div>
 					</div>
 				)}
 			</div>
@@ -435,7 +435,7 @@ const AnnouncementForm = ({ addAnnouncement, handleClose }) => {
 			</Button>
 			<div>
 				{Object.keys(formErrors).length > 0 ? (
-					<p style={{ color: "red" }}>Please fill all the fields</p>
+					<div style={{ color: "red" }}>Please fill all the fields</div>
 				) : null}
 			</div>
 		</Box>

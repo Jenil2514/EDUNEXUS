@@ -17,6 +17,8 @@ const CourseCard2 = ({ cid,courseName, instructor, avatarLetter, courseCode }) =
 					}}
 					style={{ cursor: "pointer" }}
 				>
+					{/* shadow/back layer placed before the card so it naturally sits behind */}
+					<div className="card_back" />
 					<div className="card">
 						<div className="fl">
 							<div className="fullscreen">
@@ -32,7 +34,7 @@ const CourseCard2 = ({ cid,courseName, instructor, avatarLetter, courseCode }) =
 						<div className="card_content">
 							<button>{courseName}</button>
 						</div>
-						<div className="card_back" />
+					
 					</div>
 					<div style={{ marginLeft: "0" }}>
 						<div className="data">
@@ -85,8 +87,8 @@ const CourseCard2 = ({ cid,courseName, instructor, avatarLetter, courseCode }) =
 const StyledWrapper = styled.div`
 	/* CodePen Card */
 	.card {
-		width: 15em;
-		height: 10em;
+		width: 17em;
+		height: 11em;
 		// background: linear-gradient(270deg, #ce68d9, #45c6db, #45db79);
 		background: linear-gradient(270deg, #4a90e2, #50a7f9, #6ec1ff);
 		background-size: 800% 800%;
@@ -102,6 +104,14 @@ const StyledWrapper = styled.div`
 		justify-content: flex-end;
 		opacity: 0;
 		transition: 0.2s ease-in-out;
+	}
+	/* anchor the absolute back-card so its size changes don't affect layout */
+	.main {
+		position: relative;
+		display: inline-flex;
+		/* ensure wrapper fits card size so overlays don't push other layout */
+		width: 17em;
+		height: 11em;
 	}
 	.fl:hover .fullscreen {
 		scale: 1.2;
@@ -128,24 +138,26 @@ const StyledWrapper = styled.div`
 		fill: rgb(177, 176, 176);
 		transition: 0.2s ease-in-out;
 	}
+	/* shadow/back layer: positioned using transform so it doesn't change layout
+	   and stays behind the front card. Uses translate to place top-left as shadow. */
 	.card_back {
 		position: absolute;
-		width: 15em;
-		height: 13em;
+		width: 100%;
+		height: 100%;
 		background-color: rgba(30, 31, 38, 0.6);
-		// background-color: rgba(10, 30, 30, 0.5);
 		border-radius: 7px;
-		margin-top: -4.7em;
-		margin-left: 0.7em;
-		transition: 0.2s ease-in-out;
-		z-index: -1;
+		transform: translate(-14px, -10px) scale(1);
+		transition: transform 0.2s ease-in-out;
+		z-index: 0; /* keep shadow behind the front card */
+		pointer-events: none; /* don't intercept clicks */
+	}
+	/* front card sits above the back shadow */
+	.card {
+		position: relative;
+		z-index: 2; /* front card above the shadow */
 	}
 	.main:hover .card_back {
-		margin-top: -5.9em;
-		margin-left: 0em;
-		scale: 1.1;
-		height: 15.25em;
-		cursor: pointer;
+		transform: translate(-16px, -12px) scale(1.04);
 	}
 	.main:hover .fl {
 		opacity: 1;
@@ -192,7 +204,10 @@ const StyledWrapper = styled.div`
 		width: 5rem;
 		height: 1.4em;
 		border-radius: 4px;
-		margin-top: -0.5em;
+		/* start visually offset (so it looks tucked in) but don't change layout
+		   use transform to animate into place on hover. */
+		margin-top: 0;
+		transform: translateY(-0.6em);
 		opacity: 0;
 		background-color: #444857;
 		transition: 0.2s ease-in-out;
@@ -247,7 +262,8 @@ const StyledWrapper = styled.div`
 		width: 3em;
 		height: 1.4em;
 		border-radius: 4px;
-		margin-top: -0.5em;
+		margin-top: 0;
+		transform: translateY(-0.6em);
 		opacity: 0;
 		background-color: #444857;
 		transition: 0.28s ease-in-out;
@@ -267,17 +283,13 @@ const StyledWrapper = styled.div`
 		background-color: #5a5f73;
 		cursor: pointer;
 	}
-	.main:hover .likes {
-		margin-top: 0.5em;
-		opacity: 1;
-	}
-	.main:hover .comments {
-		margin-top: 0.5em;
-		opacity: 1;
-	}
+	/* animate using transform so layout isn't reflowed and content doesn't jump out */
+	.main:hover .likes,
+	.main:hover .comments,
 	.main:hover .views {
-		margin-top: 0.5em;
+		transform: translateY(0);
 		opacity: 1;
+		margin-top: 0.25em; /* small nudge if needed */
 	}
 	/* The Main Switch */
 	.card_content {
@@ -287,7 +299,7 @@ const StyledWrapper = styled.div`
 	}
 	button {
 		padding: 0.8em;
-		width: 14em;
+		width: 16em;
 		border-radius: 10px;
 		font-family: Montserrat;
 		font-size: 0.8em;

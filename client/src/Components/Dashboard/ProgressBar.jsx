@@ -6,7 +6,8 @@ import { Paper } from "@mui/material";
 import PropTypes from "prop-types";
 
 function CircularProgressWithLabel({ attendance }) {
-  const attendanceValue = parseFloat(attendance); // Convert attendance to a number
+  // Convert attendance to a number for the progress value. Accept strings like "85.00%" or numeric values.
+  const attendanceValue = Number.isFinite(parseFloat(attendance)) ? parseFloat(attendance) : 0; // fallback to 0
 
   return (
     <Paper sx={{ width: '100%', borderRadius: '20px' }} data-testid="paper-component">
@@ -44,13 +45,14 @@ function CircularProgressWithLabel({ attendance }) {
 }
 
 CircularProgressWithLabel.propTypes = {
-  attendance: PropTypes.string.isRequired,
+  attendance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
 
 export default function ProgressBar({ attendance }) {
-  return <CircularProgressWithLabel attendance={attendance} />;
+  const display = attendance ?? '0.00%';
+  return <CircularProgressWithLabel attendance={display} />;
 }
 
 ProgressBar.propTypes = {
-  attendance: PropTypes.string.isRequired,
+  attendance: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
 };
