@@ -6,6 +6,7 @@
   "scripts": {
     "test": "mocha './specs//*.spec.js'",
     "start": "powershell -ExecutionPolicy Bypass -Command \"nodemon server.js\"",
+    "seed": "node seeds/seedTempData.js",
     "coverage": "nyc --reporter=text --reporter=lcov npm test"
   },
   "nyc":{
