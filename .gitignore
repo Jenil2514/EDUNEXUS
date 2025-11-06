@@ -26,7 +26,8 @@
 /server/node_modules
 
 # Environment Variables
-/server/.env
 /server/reports
 /server/specs
 /server/.nyc_output
+/server/seeds
+/server/.env

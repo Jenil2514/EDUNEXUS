@@ -4,46 +4,40 @@ const { z } = require('zod');
 
 const authUser = async (req, res) => {
   console.log("Login attempt received");
-  const { SID, password,role } = req.body;
+  try {
+    const { SID, password, role } = req.body || {};
 
+    console.log('Login body:', req.body);
 
-  const userExists = await pool.query(
-    `select * from Login where SID='${SID}'`
-  );
+    if (!SID || !password || !role) {
+      return res.status(400).json({ success: false, message: 'Missing SID, password or role in request body' });
+    }
 
-  if (userExists.rows.length) {
+    // use parameterized queries to avoid SQL injection and type issues
+    const userResult = await pool.query('SELECT * FROM login WHERE sid = $1', [SID]);
+    if (userResult.rows.length === 0) {
+      return res.status(400).json({ success: false, message: 'Login failed: user not found' });
+    }
 
-    if(userExists.rows[0].role !=role ){
-      return res
-       .status(401)
-       .json({ success: false, message: `You don't have a permission as ${role}` });
+    const user = userResult.rows[0];
+    if (user.role !== role) {
+      return res.status(401).json({ success: false, message: `You don't have a permission as ${role}` });
+    }
 
-     }
+    const pwResult = await pool.query('SELECT password = crypt($1, password) as valid FROM login WHERE sid = $2', [password, SID]);
+    const valid = pwResult.rows[0] && pwResult.rows[0].valid;
 
-     const user = userExists.rows[0];
-    const isValidPassword = await pool.query(
-      `SELECT password = crypt('${password}', password) as valid FROM Login WHERE SID='${SID}'`
-    );
+    if (valid) {
+      console.log('Password matched for', SID);
+      return res.status(200).json({ role: user.role, SID: user.sid, token: generateToken(user.role), success: true });
+    }
 
-    
-    console.log(user);
-
-    if (isValidPassword.rows[0].valid) {
-      console.log("Password matched");
-      res.status(201).json({
-        role: user.role,
-        SID: user.sid,
-        token: generateToken(user.role),
-        success: true
-      });
-      } else {
-        console.log("error occure");
-        return res.status(401).json({ success: false, message: "Invalid Password" });
-      }
-  } else
-   return res
-      .status(400)
-      .json({ success: false, message: "Login failed User not found" });
+    return res.status(401).json({ success: false, message: 'Invalid Password' });
+  } catch (err) {
+    console.error('authUser error:', err);
+    // Return JSON error so clients don't get HTML from Express default error handler
+    return res.status(500).json({ success: false, message: 'Internal server error', error: err.message });
+  }
 };
 
 
