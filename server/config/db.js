@@ -12,10 +12,22 @@ const pool = new Pool({
 });
 pool
   .connect()
-  .then(() => console.log("Connected to PostgreSQL"))
+  .then(async (client) => {
+    console.log("Connected to PostgreSQL");
+    try {
+      // Try to enable pgcrypto so crypt() is available. Non-fatal if not permitted.
+      await client.query('CREATE EXTENSION IF NOT EXISTS pgcrypto');
+      console.log('pgcrypto extension is available (crypt function)');
+    } catch (err) {
+      console.warn('Could not create/verify pgcrypto extension:', err.message || err);
+      console.warn('If your DB restricts extension creation, either enable pgcrypto manually or ensure passwords are verified in-app (bcrypt).');
+    } finally {
+      client.release();
+    }
+  })
   .catch((err) => {
     console.error("Error connecting to PostgreSQL:", err.message);
     process.exit(1);
   });
 
-  module.exports = pool;
+module.exports = pool;

@@ -37,23 +37,31 @@ const get_attendance = async (req,res)=>{
       else 
         semester_period = 'Autumn';
 
-      const attendance = await pool.query(`SELECT SUM(total_classes) AS total_classes, SUM(attended_classes) 
-      AS attended_classes FROM Course_enrolled_list AS cel JOIN course AS c ON cel.cid = c.cid  WHERE SID = $1 AND c.year = $2 AND c.semester = $3
-	   GROUP BY SID`,[StudentID,current_year,semester_period]);
-  
-      // console.log(attendance);
-  
-      if(attendance.rows.length === 0)
-      {
-          return {message : "No attedance data found for student"};
-      }
+            let attendance;
+            try {
+                attendance = await pool.query(`SELECT SUM(total_classes) AS total_classes, SUM(attended_classes) 
+                AS attended_classes FROM Course_enrolled_list AS cel JOIN course AS c ON cel.cid = c.cid  WHERE SID = $1 AND c.year = $2 AND c.semester = $3
+	GROUP BY SID`,[StudentID,current_year,semester_period]);
+            } catch (sqlErr) {
+                // If attendance columns/tables are not present in the schema, handle gracefully
+                if (sqlErr && sqlErr.code === '42703') {
+                    console.warn('Attendance columns missing in DB schema:', sqlErr.message || sqlErr);
+                    return { Overall_attendance: '0.00%' };
+                }
+                throw sqlErr;
+            }
+
+            if(!attendance || attendance.rows.length === 0)
+            {
+                    return {message : "No attedance data found for student"};
+            }
       
-      const {total_classes, attended_classes} = attendance.rows[0];
-      const Overall_attendance = total_classes > 0 ? (attended_classes / total_classes) * 100 : 0;
+            const {total_classes, attended_classes} = attendance.rows[0];
+            const Overall_attendance = total_classes > 0 ? (attended_classes / total_classes) * 100 : 0;
       
-      return {
-          Overall_attendance: Overall_attendance.toFixed(2)+"%"
-      };
+            return {
+                    Overall_attendance: Overall_attendance.toFixed(2)+"%"
+            };
   
     } catch (error) {
       console.error(error);

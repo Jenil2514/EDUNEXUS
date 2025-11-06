@@ -1,13 +1,14 @@
 const pool = require("../config/db");
 const generateToken = require("../config/generateToken");
 const { z } = require('zod');
+const bcrypt = require('bcryptjs');
 
 const authUser = async (req, res) => {
-  console.log("Login attempt received");
+  // console.log("Login attempt received");
   try {
     const { SID, password, role } = req.body || {};
-
-    console.log('Login body:', req.body);
+    // console.log(SID);
+    // console.log('Login body:', req.body);
 
     if (!SID || !password || !role) {
       return res.status(400).json({ success: false, message: 'Missing SID, password or role in request body' });
@@ -24,11 +25,38 @@ const authUser = async (req, res) => {
       return res.status(401).json({ success: false, message: `You don't have a permission as ${role}` });
     }
 
-    const pwResult = await pool.query('SELECT password = crypt($1, password) as valid FROM login WHERE sid = $2', [password, SID]);
-    const valid = pwResult.rows[0] && pwResult.rows[0].valid;
+    // Verify password in Node using bcrypt when possible. This avoids relying on the
+    // pgcrypto extension (crypt()) being available in Postgres.
+    const storedPassword = user.password;
+    let valid = false;
+
+    try {
+      if (typeof storedPassword === 'string' && /^\$2[aby]\$/.test(storedPassword)) {
+        // Stored value looks like a bcrypt hash (starts with $2a$, $2b$, $2y$)
+        valid = await bcrypt.compare(password, storedPassword);
+      } else if (storedPassword === password) {
+        // Plaintext match (likely from seed data) — accept for now and migrate to bcrypt.
+        valid = true;
+        // Migrate plaintext to bcrypt hash so future logins use secure hashes.
+        try {
+          const hash = await bcrypt.hash(password, 10);
+          await pool.query('UPDATE login SET password = $1 WHERE sid = $2', [hash, SID]);
+          // console.log(`Migrated plaintext password to bcrypt for SID=${SID}`);
+        } catch (migrateErr) {
+          console.warn('Failed to migrate plaintext password to bcrypt:', migrateErr.message || migrateErr);
+        }
+      } else {
+        // No bcrypt hash and not a plaintext match. Do not attempt SQL crypt() here to avoid
+        // depending on pgcrypto being available on the DB. Treat as invalid credentials.
+        valid = false;
+      }
+    } catch (verifyErr) {
+      console.error('Password verification error:', verifyErr.message || verifyErr);
+      return res.status(500).json({ success: false, message: 'Internal server error during password verification' });
+    }
 
     if (valid) {
-      console.log('Password matched for', SID);
+      // console.log('Password matched for', SID);
       return res.status(200).json({ role: user.role, SID: user.sid, token: generateToken(user.role), success: true });
     }
 
@@ -45,14 +73,14 @@ const authRole = async (req, res) => {
   // console.log(req.body);
   const { SID ,role } = req.body;
 
-  console.log(req.body);
-  console.log("Reached authRole");
+  // console.log(req.body);
+  // console.log("Reached authRole");
 
   try {
     const userExists = await pool.query(
       `select * from login where SID='${SID}'`
     );
-    console.log(userExists.rows[0]);
+    // console.log(userExists.rows[0]);
 
     if (userExists.rows.length) {
 
@@ -66,12 +94,12 @@ const authRole = async (req, res) => {
           success:true
         });
 
-        console.log("Login Successful")
+        // console.log("Login Successful")
       }
 
       else{
-        console.log(role);
-        console.log(userExists.rows[0].role);
+        // console.log(role);
+        // console.log(userExists.rows[0].role);
 
         return res
         .status(401)
