@@ -90,7 +90,7 @@ Ensure you have the following installed:
 
  
 ## 🌐 Deployment Link  
-Live version of the project: [EduNexus Live](https://edunexus-one.vercel.app/)  
+Live version of the project: [EduNexus Live](https://edunexus-eta.vercel.app/)  
 
 🛠️ **Technologies Used**
 -------------------------
